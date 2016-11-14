@@ -1,0 +1,13 @@
+QUIET=@
+ECHO=echo
+RM=rm -f
+
+all:
+
+test:
+	$(QUIET)$(ECHO) "Test"
+	./Main.py ../data/Setting.json ../data/File.meta
+
+clean:
+	$(QUIET)$(ECHO) "Removing compiled files"
+	$(QUIET)$(RM) *.pyc
