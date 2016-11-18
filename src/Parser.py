@@ -4,16 +4,24 @@ import json
 import pprint
 
 """ Load Setting.json, and then generate the GPU device list """
-def genGPUList(setting_file):
-  print 'Generate GPU device list'
+def getGPUList(setting_file):
+  print 'Get GPU device list'
 
   """ Read Setting.json """
   src = open(setting_file)
   content = json.loads(src.read())
   src.close()
 
+def getWeightList(weight_file):
+  print 'Get weight list'
+
+  """ Read Weight.json """
+  src = open(weight_file)
+  content = json.loads(src.read())
+  src.close()
+
 """ Cut the meta file """
-def analyzeMetaFile(meta_file):
+def analyzeMetaFile(meta_file, weight_list):
   print 'Analyze the meta file'
 
   """ Initialize variables """
@@ -39,19 +47,26 @@ def analyzeMetaFile(meta_file):
   """ Initialize variables for get node """
   flag = False
   node_idx = 0
+  count_paranthese = 0
 
   for str in lines:
-    """ Find __node__ function """
     if(flag or re.match('__node__', str)):
       """ First access """
       if(not flag):
         flag = True
+        count_paranthese = 1
         meta['node'].append([])
 
       meta['node'][node_idx].append(str)
 
-      """ Last access """
+      """ Count big parantheses to check whether end or not """
+      if(re.match('{', str)):
+        count_paranthese += 1
       if(re.match('}', str)):
+        count_paranthese -= 1
+
+      """ Last access """
+      if((re.match('}', str)) and (count_paranthese == 0)):
         flag = False
         node_idx += 1
 
@@ -61,7 +76,6 @@ def analyzeMetaFile(meta_file):
   execute_idx = 0
 
   for str in lines:
-    """  """
     if(execute_idx == node_idx):
       meta['execute'].append(str)
 
@@ -70,9 +84,16 @@ def analyzeMetaFile(meta_file):
       """ First access """
       if(not flag):
         flag = True
+        count_paranthese = 1
+
+      """ Count big parantheses to check whether end or not """
+      if(re.match('{', str)):
+        count_paranthese += 1
+      if(re.match('}', str)):
+        count_paranthese -= 1
 
       """ Last access """
-      if(re.match('}', str)):
+      if((re.match('}', str)) and (count_paranthese == 0)):
         flag = False
         execute_idx += 1
 

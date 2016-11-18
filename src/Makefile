@@ -6,7 +6,7 @@ all:
 
 test:
 	$(QUIET)$(ECHO) "Test"
-	./Main.py ../data/Setting.json ../data/File.meta
+	./Main.py ../data/Setting.json ../data/File.meta ../data/Weight.json
 
 clean:
 	$(QUIET)$(ECHO) "Removing compiled files"

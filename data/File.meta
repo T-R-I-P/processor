@@ -17,6 +17,7 @@ __node__(3){    #with tf.device('/job:worker/task:1/gpu:0'):
   y_3 = tf.nn.tanh(tf.matmul(y_2, y3))
 }
 __node__(4){    #with tf.device('/job:worker/task:2/gpu:0'):
+  result = sess.run(train_step, feed_dict={x: x_, y_4_:tmpY}) # input feed here
   y4 = tf.Variable(tf.random_uniform([500,600]))
   y_4 = tf.nn.relu(tf.matmul(y_3, y4))
 }
