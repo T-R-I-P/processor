@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#argv = Setting.json
+#argv = Benchmark.py Setting.json Benchmark_result.json
 
 # System Imports
 import sys

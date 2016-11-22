@@ -3,15 +3,6 @@ import re
 import json
 import pprint
 
-""" Load Setting.json, and then generate the GPU device list """
-def getGPUList(setting_file):
-  print 'Get GPU device list'
-
-  """ Read Setting.json """
-  src = open(setting_file)
-  content = json.loads(src.read())
-  src.close()
-
 def getWeightList(weight_file):
   print 'Get weight list'
 
@@ -146,6 +137,7 @@ def analyzeNodeFunction(node_content, weight_list):
       """ Count grade """
       for weight_element in weight_list:
         if(re.search(weight_element, str)):
+          print str
           result[idx]['weight_grade'] += weight_list[weight_element]
 
   return result

@@ -6,7 +6,7 @@ all:
 
 test:
 	$(QUIET)$(ECHO) "Program Test"
-	./Benchmark.py ../data/Setting.json
+	#./Benchmark.py ../data/Benchmark.py ../data/Setting.json ../data/benchmark_result.json
 	./Main.py ../data/Setting.json ../data/File.meta ../data/Weight.json
 
 clean:
