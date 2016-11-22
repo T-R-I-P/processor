@@ -15,9 +15,9 @@ import pprint
 
 
 """ Env Paramaters Initialization """
-setting_file = sys.argv[1]
-benchmark_file = sys.argv[2]
-output_file_name = sys.argv[3]
+benchmark_file = sys.argv[1] if len(sys.argv) > 1 else '../data/Benchmark.py'
+setting_file = sys.argv[2] if len(sys.argv) > 2 else '../data/Setting.json'
+output_file_name = sys.argv[3] if len(sys.argv) > 3 else '../data/benchmark_result.json'
 
 
 """ Env Initialization """
@@ -41,7 +41,9 @@ for device in device_list:
 
         device_score_list.append({'name': device, 'exec-time': end - start})
 
+
 """ Wrapping """
+# some wrapping option here
 
 
 """ Output """
