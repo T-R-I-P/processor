@@ -27,6 +27,7 @@ __node__(5){    #with tf.device('/job:worker/task:0/gpu:0'):
   train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
 }
 
+__execute__(){
 sess = tf.Session("grpc://localhost:2222", config=tf.ConfigProto(log_device_placement=True))
 #timestamp1 here
 init = tf.initialize_all_variables()
@@ -43,3 +44,4 @@ for i in range(int(rangeCount)):
   result = sess.run(train_step, feed_dict={x: x_, y_4_:tmpY}) # input feed here
 sess.close()
 # timestamp2 here
+}

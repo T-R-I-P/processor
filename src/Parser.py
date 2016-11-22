@@ -1,11 +1,12 @@
+# System Imports
 import sys
 import re
 import json
+
+# For Debug
 import pprint
 
 def getWeightList(weight_file):
-  print 'Get weight list'
-
   """ Read Weight.json """
   src = open(weight_file)
   content = json.loads(src.read())
@@ -36,14 +37,11 @@ def analyzeMetaFile(meta_file, weight_list):
   meta['header'] = getHeader(lines)
 
   """ Get part of node function """
-  (node_content, count_node) = getNodeFunction(lines)
-  meta['node'] = analyzeNodeFunction(node_content, weight_list)
+  node = getNodeFunction(lines)
+  (meta['node'], meta['variable']) = analyzeNodeFunction(node, weight_list)
 
   """ Get part of execute """
-  meta['execute'] = getExecute(lines, count_node)
-
-  #Debug
-  pprint.pprint(meta)
+  meta['execute'] = getExecute(lines)
 
   return meta
 
@@ -61,9 +59,9 @@ def getNodeFunction(lines):
   """ Initialize variables for get node """
   flag = False
   node_idx = ''
-  count_node = 0
   count_paranthese = 0
-  node_content = {}
+  node = []
+  content = {}
 
   for str in lines:
     if(flag or re.match('__node__', str)):
@@ -72,13 +70,17 @@ def getNodeFunction(lines):
         flag = True
         count_paranthese = 1
         node_idx = re.search(r'\((.*?)\)', str).group(1)
-        node_content[node_idx] = []
+
+        content = {}
+        content['content'] = ''
+        content['lines'] = []
+        content['node_idx'] = node_idx
         continue
 
       """ Last access """
       if((re.match('}', str)) and (count_paranthese == 1)):
         flag = False
-        count_node += 1
+        node.append(content)
         continue
 
       """ Count big parantheses to check whether end or not """
@@ -88,23 +90,20 @@ def getNodeFunction(lines):
         count_paranthese -= 1
 
       """ Append new line """
-      node_content[node_idx].append(str)
+      content['content'] += str + '\n'
+      content['lines'].append(str)
 
-  return (node_content, count_node)
+  return node
 
-def getExecute(lines, count_node):
+def getExecute(lines):
   """ Initialize variables for get execute part """
   flag = False
-  execute_idx = 0
+  count_paranthese = 0
   result = ''
 
   for str in lines:
-    if(execute_idx == count_node):
-      result += str + '\n'
-      continue
-
-    """ Find __node__ function """
-    if(flag or re.match('__node__', str)):
+    """ Find __execute__ function """
+    if(flag or re.match('__execute__', str)):
       """ First access """
       if(not flag):
         flag = True
@@ -114,7 +113,6 @@ def getExecute(lines, count_node):
       """ Last access """
       if((re.match('}', str)) and (count_paranthese == 1)):
         flag = False
-        execute_idx += 1
         continue
 
       """ Count big parantheses to check whether end or not """
@@ -123,22 +121,60 @@ def getExecute(lines, count_node):
       if(re.match('}', str)):
         count_paranthese -= 1
 
+      result += str + '\n'
+
   return result
 
-def analyzeNodeFunction(node_content, weight_list):
-  result = {}
+def analyzeNodeFunction(node, weight_list):
+  variable = []
+  new_variable = {}
+  first_equal_op = 0
+  left_value = ''
+  right_value = ''
+  tmp = ''
+  src = ''
 
-  """ Get variables """
-  for idx in node_content:
-    result[idx] = {}
-    result[idx]['weight_grade'] = 0
+  for idx, content in enumerate(node):
+    content['weight_grade'] = 0
 
-    for str in node_content[idx]:
-      """ Count grade """
+    for str in content['lines']:
+      """ Count keyword grade """
       for weight_element in weight_list:
         if(re.search(weight_element, str)):
-          print str
-          result[idx]['weight_grade'] += weight_list[weight_element]
+          content['weight_grade'] += weight_list[weight_element]
 
-  return result
+      """ Get variable """
+      """ Find first equal operator """
+      first_equal_op = str.find('=')
+      left_value = str[0:(first_equal_op-1)]
+      right_value = str[(first_equal_op+1):len(str)]
+
+      """ Remove all spaces and tabs """
+      left_value = re.sub('[\s+]', '', left_value)
+      right_value = re.sub('[\s+]', '', right_value)
+
+      new_variable = {}
+      new_variable['node_idx'] = content['node_idx']
+      new_variable['name'] = left_value
+
+      if(re.search('matmul', str)):
+        new_variable['type'] = 'matmul'
+        tmp = re.search(r'matmul\((.*?)\)', right_value).group(1)
+        new_variable['value'] = tmp.split(',')
+      elif(re.search('random_uniform', str)):
+        new_variable['type'] = 'random_uniform'
+        tmp = re.search(r'random_uniform\(\[(.*?)\]\)', right_value).group(1)
+        new_variable['value'] = tmp.split(',')
+      elif(re.search('placeholder', str)):
+        new_variable['type'] = 'placeholder'
+        tmp = re.search(r'placeholder\(.*?\[(.*?)\]\)', right_value).group(1)
+        new_variable['value'] = tmp.split(',')
+      else:
+        continue
+
+      variable.append(new_variable)
+
+    node[idx] = content
+
+  return (node, variable)
 

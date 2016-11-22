@@ -1,5 +1,7 @@
+import tensorflow as tf
+
 """ Find the optimization setting """
-def getOptimization(gpu_list, meta):
+def getOptimization(device_list, meta):
   print 'Find the optimization setting'
 
 """ Timing """

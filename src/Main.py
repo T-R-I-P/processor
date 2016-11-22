@@ -1,20 +1,25 @@
 #!/usr/bin/env python
 #argv = Setting.json, Meta Language File
 
+# System Imports
 import sys
 
+# Our Library
 import Parser
 import Evaluator
 import CodeGenerator
 import Utils
 
+# TensorFlow Inports
+import tensorflow as tf
+
+# For Debug
+import pprint
+
 """ Parameter Initialization """
 setting_file = sys.argv[1]
 meta_file = sys.argv[2]
 weight_file = sys.argv[3]
-
-""" Load Setting.json """
-worker_hosts = Utils.getSetting(setting_file, "clusters")
 
 """ Parser """
 print '====== Parser ======'
@@ -25,13 +30,16 @@ weight_list = Parser.getWeightList(weight_file)
 """ Generate a object from the meta file """
 meta = Parser.analyzeMetaFile(meta_file, weight_list)
 
+pprint.pprint(meta)
+
 """ Evaluator """
 print '====== Evaluator ======'
 """ Find the optimization setting """
-optimization_setting = Evaluator.getOptimization(worker_hosts, meta)
+optimization_setting = Evaluator.getOptimization(setting_file, meta)
 
 """ Code Generator """
 print '====== Code Generator ======'
 """ Generate the optimization code """
 CodeGenerator.genOptimization(optimization_setting)
+
 
