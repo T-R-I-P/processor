@@ -27,7 +27,7 @@ benchmark_src = Utils.loadFile(benchmark_file)
 
 """ TensorFlow Env Initialization """
 cluster = tf.train.ClusterSpec({"worker": worker_hosts})
-device_list = Utils.getDeivceList(worker_hosts)
+device_list = Utils.getDeviceList(worker_hosts)
 
 
 """ Benchmark """
@@ -45,4 +45,4 @@ for device in device_list:
 
 
 """ Output """
-Utils.saveFile(output_file_name, json.dump(device_score_list))
+Utils.saveFile(output_file_name, json.dumps(device_score_list))
