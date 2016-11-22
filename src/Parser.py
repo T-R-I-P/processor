@@ -6,20 +6,8 @@ import json
 # For Debug
 import pprint
 
-def getWeightList(weight_file):
-  """ Read Weight.json """
-  src = open(weight_file)
-  content = json.loads(src.read())
-  src.close()
-
-  """ Convert to int """
-  for idx in content:
-    content[idx] = int(content[idx])
-
-  return content
-
 """ Cut the meta file """
-def analyzeMetaFile(meta_file, weight_list):
+def analyzeMetaFile(meta_file):
   print 'Analyze the meta file'
 
   """ Initialize variables """
@@ -37,8 +25,11 @@ def analyzeMetaFile(meta_file, weight_list):
   meta['header'] = getHeader(lines)
 
   """ Get part of node function """
-  node = getNodeFunction(lines)
-  (meta['node'], meta['variable']) = analyzeNodeFunction(node, weight_list)
+  node = getNode(lines)
+
+  """  """
+  (meta['node'], meta['variable']) = analyzeNode(node)
+  meta['variable'] = restructure(meta)
 
   """ Get part of execute """
   meta['execute'] = getExecute(lines)
@@ -55,10 +46,10 @@ def getHeader(lines):
 
   return result
 
-def getNodeFunction(lines):
+def getNode(lines):
   """ Initialize variables for get node """
   flag = False
-  node_idx = ''
+  device_id = ''
   count_paranthese = 0
   node = []
   content = {}
@@ -69,12 +60,12 @@ def getNodeFunction(lines):
       if(not flag):
         flag = True
         count_paranthese = 1
-        node_idx = re.search(r'\((.*?)\)', str).group(1)
+        device_id = re.search(r'\((.*?)\)', str).group(1)
 
         content = {}
         content['content'] = ''
         content['lines'] = []
-        content['node_idx'] = node_idx
+        content['device_id'] = device_id
         continue
 
       """ Last access """
@@ -125,7 +116,7 @@ def getExecute(lines):
 
   return result
 
-def analyzeNodeFunction(node, weight_list):
+def analyzeNode(node):
   variable = []
   new_variable = {}
   first_equal_op = 0
@@ -135,14 +126,9 @@ def analyzeNodeFunction(node, weight_list):
   src = ''
 
   for idx, content in enumerate(node):
-    content['weight_grade'] = 0
+    content['grade'] = 0
 
     for str in content['lines']:
-      """ Count keyword grade """
-      for weight_element in weight_list:
-        if(re.search(weight_element, str)):
-          content['weight_grade'] += weight_list[weight_element]
-
       """ Get variable """
       """ Find first equal operator """
       first_equal_op = str.find('=')
@@ -154,7 +140,8 @@ def analyzeNodeFunction(node, weight_list):
       right_value = re.sub('[\s+]', '', right_value)
 
       new_variable = {}
-      new_variable['node_idx'] = content['node_idx']
+      new_variable['node_id'] = idx
+      new_variable['device_id'] = content['device_id']
       new_variable['name'] = left_value
 
       if(re.search('matmul', str)):
@@ -177,4 +164,18 @@ def analyzeNodeFunction(node, weight_list):
     node[idx] = content
 
   return (node, variable)
+
+def restructure(meta):
+  variable = meta['variable']
+
+  r_variable = {}
+  r_variable['matmul'] = []
+  r_variable['ele'] = []
+  for idx, content in enumerate(variable):
+    if(content['type'] == 'matmul'):
+      r_variable['matmul'].append(content)
+    elif(content['type'] == 'placeholder' or content['type'] == 'random_uniform'):
+      r_variable['ele'].append(content)
+
+  return r_variable
 
