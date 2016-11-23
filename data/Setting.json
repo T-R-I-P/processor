@@ -1,11 +1,11 @@
 {
     "clusters": [
-        "master:2222",
-        "slave1:2222",
-        "slave2:2222"
+        {"host": "master", "port": 22222},
+        {"host": "slave1", "port": 22222},
+        {"host": "slave2", "port": 22222}
     ],
-    "localhost": [
-      "master:2222"
-    ]
+    "net-test-info": {
+        "host": "master",
+        "datasize": 10
+    }
 }
-
