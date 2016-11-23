@@ -51,11 +51,10 @@ def createSockets(worker_hosts):
 
 def requestMsg(send_msg, wait_msg, sock, recive_size, ttl=10):
 	while True:
-		ttl -= 1
 		sock.send(send_msg)
 
 		msg = sock.recv(recive_size)
-		if msg == wait_msg or wait_msg == None or ttl == 0:
+		if msg == wait_msg or wait_msg == None:
 			break
 
 	return msg

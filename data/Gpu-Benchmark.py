@@ -57,7 +57,7 @@ sess.run(init_op)
 
 batch_size = 1000
 no_of_batches = int(len(train_input)) / batch_size
-epoch = 2000
+epoch = 1
 for i in range(epoch):
     ptr = 0
     for j in range(no_of_batches):

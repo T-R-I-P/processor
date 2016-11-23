@@ -12,8 +12,8 @@ import pprint
 
 
 """ Env Paramaters Initialization """
-cpu_benchmark_file = sys.argv[1] if len(sys.argv) > 1 else '../data/Cpu-Benchmark.py'
-gpu_benchmark_file = sys.argv[2] if len(sys.argv) > 2 else '../data/Gpu-Benchmark.py'
+gpu_benchmark_file = sys.argv[1] if len(sys.argv) > 1 else '../data/Gpu-Benchmark.py'
+cpu_benchmark_file = sys.argv[2] if len(sys.argv) > 2 else '../data/Cpu-Benchmark.py'
 setting_file = sys.argv[3] if len(sys.argv) > 3 else '../data/Setting.json'
 output_file_name = sys.argv[4] if len(sys.argv) > 4 else '../data/benchmark_result.json'
 
