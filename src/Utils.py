@@ -31,8 +31,22 @@ def getDeviceList(worker_hosts):
         with tf.device(now_worker_name):
             device_ids = [ device.name for device in device_lib.list_local_devices()]
             device_list.extend([ (now_worker_name + device_id) for device_id in device_ids ])
-    
+
     return device_list
+
+def getBenchmarkResult(filename):
+  benchmark = json.loads(loadFile(filename))
+
+  return benchmark
+
+def getWeightList(filename):
+  weight_list = json.loads(loadFile(filename))
+
+  """ Convert to int """
+  for idx in weight_list:
+    weight_list[idx] = int(weight_list[idx])
+
+  return weight_list
 
 def saveFile(filename, content):
     src = open(filename, 'w')

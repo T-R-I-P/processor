@@ -29,7 +29,7 @@ def analyzeMetaFile(meta_file):
 
   """  """
   (meta['node'], meta['variable']) = analyzeNode(node)
-  meta['variable'] = restructure(meta)
+  (meta['node'], meta['variable']) = restructure(meta)
 
   """ Get part of execute """
   meta['execute'] = getExecute(lines)
@@ -177,5 +177,23 @@ def restructure(meta):
     elif(content['type'] == 'placeholder' or content['type'] == 'random_uniform'):
       r_variable['ele'].append(content)
 
-  return r_variable
+  node = meta['node']
+  node_id = ''
+  device_id = ''
+  r_node = {}
+  r_node['device'] = {}
+  r_node['ele'] = node
+
+  for idx, content in enumerate(node):
+    device_id = content['device_id']
+    r_node['device'][device_id] = []
+
+  for idx, content in enumerate(node):
+    device_id = content['device_id']
+    node_id = idx
+    r_node['device'][device_id].append({'node_id':node_id})
+
+  r_node['node'] = len(node)
+
+  return (r_node, r_variable)
 

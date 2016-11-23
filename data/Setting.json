@@ -3,6 +3,9 @@
         "master:2222",
         "slave1:2222",
         "slave2:2222"
+    ],
+    "localhost": [
+      "master:2222"
     ]
 }
 

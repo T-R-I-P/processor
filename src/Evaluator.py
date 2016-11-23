@@ -2,6 +2,7 @@
 import math
 import json
 import re
+import time
 
 # Our Library
 import Utils
@@ -13,13 +14,29 @@ import pprint
 def getOptimization(setting_file, weight_file, benchmark_file, meta):
   print 'Find the optimization setting'
 
-  weight_list = getWeightList(weight_file)
+  """ Env Initialization """
+  exec_code = ''
+  node_code = ''
+  start = 0
+  end = 0
+  weight_list = Utils.getWeightList(weight_file)
+#  worker_hosts = Utils.getSetting(setting_file, "clusters")
+  worker_hosts = Utils.getSetting(setting_file, "localhost")
+  benchmark = Utils.getBenchmarkResult(benchmark_file)
 
-  meta['node'] =  countWeight(meta['node'], weight_list)
-  meta['node'] = countMatmul(meta['node'], meta['variable']['matmul'], meta['variable']['ele'])
+  """ TensorFlow Env Initialization """
+  device_list = Utils.getDeviceList(worker_hosts)
 
-#  pprint.pprint(meta['node'])
+  """ Count grade """
+  meta['node']['ele'] =  countWeight(meta['node']['ele'], weight_list)
+  meta['node']['ele'] = countMatmul(meta['node']['ele'], meta['variable']['matmul'], meta['variable']['ele'])
 
+  exec_code = meta['header'] + node_code + meta['execute']
+
+
+  start = time.time()
+  #exec(exec_code)
+  end = time.time()
 
 def countWeight(node, weight_list):
   for idx, ele in enumerate(node):
@@ -45,7 +62,7 @@ def countMatmul(node, src_matmul, src_ele):
     first_var = e_matmul['value'][0]
     second_var = e_matmul['value'][1]
 
-    """ Search matmul elements, and get the grade """
+    """ Search matmul elements, and get the grade of the variable """
     for e_ele in src_ele:
       if(e_ele['name'] == first_var):
         if(e_ele['value'][0] == 'None'):
@@ -56,21 +73,9 @@ def countMatmul(node, src_matmul, src_ele):
         second_val = int(e_ele['value'][1])
 
     """ Grade by our rules """
-    grade = first_val * second_val
+    grade = math.sqrt(first_val * second_val)
     node[node_id]['grade'] += grade
 
   return node
-
-def getWeightList(weight_file):
-  """ Read Weight.json """
-  src = open(weight_file)
-  content = json.loads(src.read())
-  src.close()
-
-  """ Convert to int """
-  for idx in content:
-    content[idx] = int(content[idx])
-
-  return content
 
 
