@@ -100,7 +100,6 @@ def getPerformance(banchmark_srcs, device_list, worker_hosts, socks):
 
 	return execution_scores
 		
-
 def getNetCon(net_test_info, worker_hosts, socks):
 	""" Net Test Paramater Initialization """
 	connect_host = net_test_info["host"]
@@ -123,3 +122,17 @@ def getNetCon(net_test_info, worker_hosts, socks):
 		network_scores[worker["host"]] = max(0.000001, transfer_time * multiplier)
 
 	return network_scores
+
+def wrap(worker_hosts, device_list, execution_scores, network_scores):
+	benchmark_result = []
+
+	for worker in worker_hosts:
+		for device in device_list[worker["host"]]:
+			benchmark_result.append({
+				"host-name": worker["host"],
+				"device-name": device,
+				"execution-score": execution_scores[worker["host"]][device],
+				"network-score": network_scores[worker["host"]]
+			})
+
+	return benchmark_result

@@ -34,26 +34,24 @@ socks = Utils.createSockets(worker_hosts)
 
 """ Get Device List """
 device_list = Utils.getDeviceList(worker_hosts, socks)
-pprint.pprint(device_list)
 
 
 """ Performance Benchmark """
 execution_scores = Utils.getPerformance(benchmark_srcs, device_list, worker_hosts, socks)
-pprint.pprint(execution_scores)
 
 
 """ Network Benchmark """
 network_scores = Utils.getNetCon(net_test_info, worker_hosts, socks)
-pprint.pprint(network_scores)
 
 
 """ Wrapping Result """
-benchmark_result = {}
+benchmark_result = Utils.wrap(worker_hosts, device_list, execution_scores, network_scores)
 
 
 """ Output """
 Utils.saveFile(output_file_name, json.dumps(benchmark_result))
 pprint.pprint(benchmark_result)
+
 
 """ Ending """
 Utils.endTest(worker_hosts, socks)
