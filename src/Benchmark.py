@@ -25,7 +25,6 @@ benchmark_srcs = {
     "cpu": Utils.loadFile(cpu_benchmark_file),
     "gpu": Utils.loadFile(gpu_benchmark_file)
 }
-worker_hosts = [{"host": "master", "port": 22222}]
 
 
 """ Network Connection Initialization """
