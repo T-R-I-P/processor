@@ -4,7 +4,7 @@ from random import shuffle
 import tensorflow as tf
 import time
 
-NUM_EXAMPLES = 1000
+NUM_EXAMPLES = 10
 
 train_input = ['{0:020b}'.format(i) for i in range(2**20)]
 shuffle(train_input)
