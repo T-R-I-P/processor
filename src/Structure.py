@@ -3,7 +3,9 @@ class Node:
   def __init__(self):
     self.node_count = 0
     self.node = {}
+    self.matmul_count = 0
     self.matmul = []
+    self.variable_count = 0
     self.variable = []
 
   def addNode(self, node_id, device_id, content, lines):
@@ -24,11 +26,19 @@ class Node:
       'value': value
     })
 
-  def addMatmul(self, node_id, value):
+    if(type == 'matmul'):
+      self.addMatmul(node_id, self.variable_count, value)
+
+    self.variable_count += 1
+
+  def addMatmul(self, node_id, variable_id, value):
     self.matmul.append({
       'node_id': node_id,
+      'variable_id': variable_id,
       'value': value
     })
+
+    self.matmul_count += 1
 
   def changeGrade(self, node_id, grade):
     self.node[node_id]['grade'] = grade

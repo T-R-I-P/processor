@@ -183,8 +183,5 @@ def wrapClass(raw_node, raw_var):
   for idx, e in enumerate(raw_var):
     node.addVariable(e['node_id'], e['name'], e['type'], e['value'])
 
-    if(e['type'] == 'matmul'):
-      node.addMatmul(e['node_id'], e['value'])
-
   return node
 
