@@ -3,6 +3,9 @@ import sys
 import re
 import json
 
+# Our Library
+import Structure
+
 # For Debug
 import pprint
 
@@ -11,7 +14,7 @@ def analyzeMetaFile(meta_file):
   print 'Analyze the meta file'
 
   """ Initialize variables """
-  meta = {}
+  raw = {}
 
   """ Read meta file """
   src = open(meta_file)
@@ -22,19 +25,21 @@ def analyzeMetaFile(meta_file):
   lines = re.split('\n', content)
 
   """ Get part of header """
-  meta['header'] = getHeader(lines)
+  raw['header'] = getHeader(lines)
+
+  """ Get part of execute """
+  raw['execute'] = getExecute(lines)
 
   """ Get part of node function """
   node = getNode(lines)
 
-  """  """
-  (meta['node'], meta['variable']) = analyzeNode(node)
-  (meta['node'], meta['variable']) = restructure(meta)
+  """ Restructure node """
+  raw['node'] = analyzeNode(node)
 
-  """ Get part of execute """
-  meta['execute'] = getExecute(lines)
+  """ Wrapper to a class FOR GOOD API """
+  node = wrapClass(raw['node']['node'], raw['node']['variable'])
 
-  return meta
+  return (raw, node)
 
 def getHeader(lines):
   result = ''
@@ -117,6 +122,7 @@ def getExecute(lines):
   return result
 
 def analyzeNode(node):
+  r_node = {}
   variable = []
   new_variable = {}
   first_equal_op = 0
@@ -163,37 +169,22 @@ def analyzeNode(node):
 
     node[idx] = content
 
-  return (node, variable)
+  r_node['node'] = node
+  r_node['variable'] = variable
 
-def restructure(meta):
-  variable = meta['variable']
+  return r_node
 
-  r_variable = {}
-  r_variable['matmul'] = []
-  r_variable['ele'] = []
-  for idx, content in enumerate(variable):
-    if(content['type'] == 'matmul'):
-      r_variable['matmul'].append(content)
-    elif(content['type'] == 'placeholder' or content['type'] == 'random_uniform'):
-      r_variable['ele'].append(content)
+def wrapClass(raw_node, raw_var):
+  node = Structure.Node()
 
-  node = meta['node']
-  node_id = ''
-  device_id = ''
-  r_node = {}
-  r_node['device'] = {}
-  r_node['ele'] = node
+  for node_id, e in enumerate(raw_node):
+    node.addNode(node_id, e['device_id'], e['content'], e['lines'])
 
-  for idx, content in enumerate(node):
-    device_id = content['device_id']
-    r_node['device'][device_id] = []
+  for idx, e in enumerate(raw_var):
+    node.addVariable(e['node_id'], e['name'], e['type'], e['value'])
 
-  for idx, content in enumerate(node):
-    device_id = content['device_id']
-    node_id = idx
-    r_node['device'][device_id].append({'node_id':node_id})
+    if(e['type'] == 'matmul'):
+      node.addMatmul(e['node_id'], e['value'])
 
-  r_node['node'] = len(node)
-
-  return (r_node, r_variable)
+  return node
 

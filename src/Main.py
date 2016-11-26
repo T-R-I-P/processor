@@ -25,20 +25,18 @@ benchmark_file = sys.argv[4] if len(sys.argv)>4 else '../data/benchmark_result.j
 """ Parser """
 print '====== Parser ======'
 """ Generate a object from the meta file          """
-""" meta (object)                                 """
+""" raw (object)                                  """
 """ |                                             """
 """ |---- header (string)                         """
 """ |                                             """
+""" |---- execute (string)                        """
+""" |                                             """
 """ |---- node   (object)                         """
 """ |     |                                       """
-""" |     |--- device (object)                    """
-""" |     |    |                                  """
-""" |     |    |--- [device_id] (array)           """
-""" |     |         {                             """
-""" |     |           'node_id': [node_id]        """
-""" |     |         }                             """
+""" |     |--- node (array)                       """
 """ |     |                                       """
-""" |     |--- ele (array)                        """
+""" |     |    index is node_id                   """
+""" |     |    Each Element                       """
 """ |     |    {                                  """
 """ |     |      'content': [source string]       """
 """ |     |      'lines': [source lines]          """
@@ -46,28 +44,23 @@ print '====== Parser ======'
 """ |     |      'grade': [grade]                 """
 """ |     |    }                                  """
 """ |     |                                       """
-""" |     |--- variable (object)                  """
-""" |          |                                  """
-""" |          |--- matmul (array)                """
-""" |          |    {                             """
-""" |          |      'type':                     """
-""" |          |      'value': [X, Y1]            """
-""" |          |    }                             """
-""" |          |                                  """
-""" |          |--- ele (array)                   """
-""" |          |    {                             """
-""" |          |      'type':                     """
-""" |          |      'value': [None, 100]        """
-""" |          |    }                             """
-""" |                                             """
-""" |---- execute (string)                        """
-meta = Parser.analyzeMetaFile(meta_file)
+""" |     |--- variable (array)                   """
+""" |     |                                       """
+""" |     |    Each Element                       """
+""" |     |    {                                  """
+""" |     |      'name': [name]                   """
+""" |     |      'type': matmul, placeholder ...  """
+""" |     |      'value': [None, 100], or [x, y_] """
+""" |     |    }                                  """
 
+(raw, node) = Parser.analyzeMetaFile(meta_file)
+
+node.printAll()
 
 """ Evaluator """
 print '====== Evaluator ======'
 """ Find the optimization setting """
-optimization_setting = Evaluator.getOptimization(setting_file, weight_file, benchmark_file, meta)
+optimization_setting = Evaluator.getOptimization(setting_file, weight_file, benchmark_file, node)
 
 
 """ Code Generator """

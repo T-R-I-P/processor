@@ -11,32 +11,13 @@ import Utils
 import pprint
 
 """ Find the optimization setting """
-def getOptimization(setting_file, weight_file, benchmark_file, meta):
+def getOptimization(setting_file, weight_file, benchmark_file, node):
   print 'Find the optimization setting'
 
   """ Env Initialization """
-  exec_code = ''
-  node_code = ''
-  start = 0
-  end = 0
   weight_list = Utils.getWeightList(weight_file)
-#  worker_hosts = Utils.getSetting(setting_file, "clusters")
-  worker_hosts = Utils.getSetting(setting_file, "localhost")
+  worker_hosts = Utils.getSetting(setting_file, "clusters")
   benchmark = Utils.getBenchmarkResult(benchmark_file)
-
-  """ TensorFlow Env Initialization """
-  device_list = Utils.getDeviceList(worker_hosts)
-
-  """ Count grade """
-  meta['node']['ele'] =  countWeight(meta['node']['ele'], weight_list)
-  meta['node']['ele'] = countMatmul(meta['node']['ele'], meta['variable']['matmul'], meta['variable']['ele'])
-
-  exec_code = meta['header'] + node_code + meta['execute']
-
-
-  start = time.time()
-  #exec(exec_code)
-  end = time.time()
 
 def countWeight(node, weight_list):
   for idx, ele in enumerate(node):
