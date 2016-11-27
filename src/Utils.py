@@ -23,9 +23,12 @@ def getSetting(filename, aim=None):
 	return settings[aim] if ( aim != None and settings.has_key(aim) ) else settings
 
 def getBenchmarkResult(filename):
-	benchmark = json.loads(loadFile(filename))
+    benchmark = json.loads(loadFile(filename))
+    r_benchmark = []
+    for e in benchmark:
+      r_benchmark.append(e)
 
-	return benchmark
+    return r_benchmark
 
 def getWeightList(filename):
 	weight_list = json.loads(loadFile(filename))
@@ -89,16 +92,16 @@ def getPerformance(banchmark_srcs, device_list, worker_hosts, socks):
 		for test_device in test_devices:
 			test_benchmark_src = banchmark_srcs['cpu' if 'cpu' in test_device else 'gpu']
 			test_benchmark_src_size = len(test_benchmark_src)
-		
+
 			requestMsg('get-performance', 'Connection-Success', sock, 1024)
 			requestMsg(str(test_benchmark_src_size), 'Got-Size', sock, 1024)
 			result_size = int(requestMsg(test_benchmark_src, None, sock, 1024))
 			execution_time = float(requestMsg('Got-Size', None, sock, result_size))
-				
+
 			execution_scores[worker["host"]][test_device] = execution_time
 
 	return execution_scores
-		
+
 def getNetCon(net_test_info, worker_hosts, socks):
 	""" Net Test Paramater Initialization """
 	connect_host = net_test_info["host"]
@@ -106,7 +109,7 @@ def getNetCon(net_test_info, worker_hosts, socks):
 	transfer_size = min(100, net_test_info["datasize"])
 
 	""" Iperf Command """
-	sh_command = "iperf -c %s -n %d | grep sec | awk '{print $4}'" % (connect_host, transfer_size * 1024 * 1024) 
+	sh_command = "iperf -c %s -n %d | grep sec | awk '{print $4}'" % (connect_host, transfer_size * 1024 * 1024)
 
 	""" Start Run """
 	network_scores = {}

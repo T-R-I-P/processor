@@ -1,20 +1,54 @@
+""" Node Class Variable                """
+"""                                    """
+""" node (array)                       """
+"""                                    """
+""" index is node_id                   """
+""" Each Element                       """
+""" {                                  """
+"""   'content': [source string]       """
+"""   'lines': [source lines]          """
+"""   'device_id': [device_id]         """
+"""   'grade': [grade]                 """
+""" }                                  """
+"""                                    """
+""" variable (array)                   """
+"""                                    """
+""" Each Element                       """
+""" {                                  """
+"""   'node_id': [node_id] Belong which node """
+"""   'name': [name] Variable name           """
+"""   'type': matmul, placeholder ...  """
+"""   'value': [None, 100], or [x, y_] """
+""" }                                  """
+"""                                    """
+""" matmul (array)                     """
+"""                                    """
+""" Each Element                       """
+""" {                                  """
+"""   'node_id': [node_id] Belong which node """
+"""   'variable_id': [variable_id]     """
+"""   'value': [None, 100], or [x, y_] """
+""" }                                  """
+
+
 class Node:
 
   def __init__(self):
     self.node_count = 0
-    self.node = {}
+    self.node = []
     self.matmul_count = 0
     self.matmul = []
     self.variable_count = 0
     self.variable = []
 
   def addNode(self, node_id, device_id, content, lines):
-    self.node[node_id] = {
+    self.node.append({
+      'node_id': node_id,
       'device_id': device_id,
       'content': content,
       'lines': lines,
       'grade': 0
-    }
+    })
 
     self.node_count += 1
 
@@ -40,8 +74,27 @@ class Node:
 
     self.matmul_count += 1
 
-  def changeGrade(self, node_id, grade):
-    self.node[node_id]['grade'] = grade
+  def getMatmul(self, matmul_id, r_array):
+    cur = self.matmul[matmul_id]
+    variable_id1 = cur['value'][0]['variable_id']
+    variable_id2 = cur['value'][1]['variable_id']
+    type1 = cur['value'][0]['type']
+    type2 = cur['value'][1]['type']
+
+    if(type1 == 'matmul'):
+      matmul_id = self.variable[variable_id1]['matmul_id']
+      r_array = self.getMatmul(matmul_id, r_array)
+    else:
+      r_array.append(self.variable[variable_id1]['value'][0])
+      r_array.append(self.variable[variable_id1]['value'][1])
+
+    if(type2 == 'matmul'):
+      matmul_id = self.variable[variable_id2]['matmul_id']
+      r_array = self.getMatmul(matmul_id, r_array)
+    else:
+      r_array.append(self.variable[variable_id2]['value'][0])
+      r_array.append(self.variable[variable_id2]['value'][1])
+    return r_array
 
   def printAll(self):
     for idx, e in enumerate(self.variable):

@@ -183,5 +183,37 @@ def wrapClass(raw_node, raw_var):
   for idx, e in enumerate(raw_var):
     node.addVariable(e['node_id'], e['name'], e['type'], e['value'])
 
+  id1 = ''
+  id2 = ''
+  name1 = ''
+  name2 = ''
+  type1 = ''
+  type2 = ''
+  """ Index Matmul and Variable """
+  for idx, e in enumerate(node.matmul):
+    variable_id = e['variable_id']
+    node.variable[variable_id]['matmul_id'] = idx
+  for idx, e in enumerate(node.matmul):
+    name1 = e['value'][0]
+    name2 = e['value'][1]
+    for idx1, e1 in enumerate(node.variable):
+      if(e1['name'] == name1):
+        id1 = idx1
+        type1 = e1['type']
+      elif(e1['name'] == name2):
+        id2 = idx1
+        type2 = e1['type']
+    node.matmul[idx]['value'] = []
+    node.matmul[idx]['value'].append({
+      'variable_id': id1,
+      'name': name1,
+      'type': type1
+    })
+    node.matmul[idx]['value'].append({
+      'variable_id': id2,
+      'name': name2,
+      'type': type2
+    })
+
   return node
 
