@@ -1,8 +1,14 @@
 import tensorflow as tf
 import numpy as np
 
+
+worker = ['master:22222']
+cluster = tf.train.ClusterSpec({"worker":worker})
+
 with tf.device('/job:worker/task:0/cpu:0')
   x = tf.placeholder(tf.float32,[None, 8])
+
+
 sess = tf.Session("grpc://localhost:2222", config=tf.ConfigProto(log_device_placement=True))
 #timestamp1 here
 init = tf.initialize_all_variables()

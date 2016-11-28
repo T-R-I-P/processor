@@ -22,13 +22,16 @@ def getSetting(filename, aim=None):
 
 	return settings[aim] if ( aim != None and settings.has_key(aim) ) else settings
 
-def getBenchmarkResult(filename):
-    benchmark = json.loads(loadFile(filename))
-    r_benchmark = []
-    for e in benchmark:
-      r_benchmark.append(e)
+def getBenchmarkResult(setting_file, benchmark_file):
+    setting = getSetting(setting_file, 'clusters')
 
-    return r_benchmark
+    benchmark = json.loads(loadFile(benchmark_file))
+    for idx, e in enumerate(setting):
+      for idx1, e1 in enumerate(benchmark):
+        if(e['host'] == e1['host-name']):
+          benchmark[idx1]['host_id'] = idx
+
+    return benchmark
 
 def getWeightList(filename):
 	weight_list = json.loads(loadFile(filename))

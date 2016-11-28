@@ -59,11 +59,11 @@ print '====== Parser ======'
 """ Evaluator """
 print '====== Evaluator ======'
 """ Find the optimization setting """
-opt_setting = Evaluator.getOptimization(weight_file, benchmark_file, data)
+opt_setting = Evaluator.getOptimization(weight_file, setting_file, benchmark_file, data)
 
 
 """ Code Generator """
 print '====== Code Generator ======'
 """ Generate the optimization code """
-CodeGenerator.genOptimization(raw, opt_setting, benchmark_file, output_file)
+CodeGenerator.genOptimization(raw, opt_setting, setting_file, benchmark_file, output_file)
 

@@ -10,7 +10,7 @@ import Utils
 import pprint
 
 """ Find the optimization setting """
-def getOptimization(weight_file, benchmark_file, data):
+def getOptimization(weight_file, setting_file, benchmark_file, data):
   """ Env Initialization """
   """                    """
   """ weight_list(Object)"""
@@ -30,10 +30,10 @@ def getOptimization(weight_file, benchmark_file, data):
   """   execution-score: 6.844493, """
   """   network-score: 1e-06       """
   """ }                            """
-  benchmark = Utils.getBenchmarkResult(benchmark_file)
+  benchmark = Utils.getBenchmarkResult(setting_file, benchmark_file)
 
-  """ Node Class Variable                """
-  """                                    """
+  """ Node Class                         """
+  """ ---------------------------------- """
   """ node (array)                       """
   """                                    """
   """ index is node_id                   """
@@ -44,7 +44,7 @@ def getOptimization(weight_file, benchmark_file, data):
   """   'device_id': [device_id]         """
   """   'grade': [grade]                 """
   """ }                                  """
-  """                                    """
+  """ ---------------------------------- """
   """ variable (array)                   """
   """                                    """
   """ Each Element                       """
@@ -54,7 +54,7 @@ def getOptimization(weight_file, benchmark_file, data):
   """   'type': matmul, placeholder ...  """
   """   'value': [None, 100], or [x, y_] """
   """ }                                  """
-  """                                    """
+  """ ---------------------------------- """
   """ matmul (array)                     """
   """                                    """
   """ Each Element                       """
@@ -99,6 +99,8 @@ def countMatmul(data):
     """ Define None value """
     if(first == 'None'):
       first = 1
+    else:
+      fist = int(first)
     data.node[node_id]['grade'] += (first * last)
 
   return data.node
@@ -107,12 +109,13 @@ def countMatmul(data):
 def pairAlgorithm(data, benchmark):
   """ Example Output """
   """ node_id => Which node  """
-  """ task_id => Which Host  """
+  """ host_id => Which Host  """
   """ benchmark_id => Which Host and Which Device """
+
   opt_setting = []
   opt_setting.append({
     'node_id': 0,
-    'task_id': 0,
+    'host_id': 0,
     'benchmark_id': 0
   })
 

@@ -11,8 +11,6 @@ import pprint
 
 """ Cut the meta file """
 def analyzeMetaFile(meta_file):
-  print 'Analyze the meta file'
-
   """ Initialize variables """
   raw = {}
 

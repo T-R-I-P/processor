@@ -1,29 +1,41 @@
 # Our Library
 import Utils
 
-""" Generate the optimization  """
-def genOptimization(raw, opt_setting, benchmark_file, output_file):
-  print 'Generate the optimization'
+""" Generate the optimization code """
+def genOptimization(raw, opt_setting, setting_file, benchmark_file, output_file):
   header = raw['header']
   node = raw['node']
   execute = raw['execute']
 
-  benchmark = Utils.getBenchmarkResult(benchmark_file)
+  setting = Utils.getSetting(setting_file, 'clusters')
+  benchmark = Utils.getBenchmarkResult(setting_file, benchmark_file)
   content = ''
 
   """ Concat header """
-  content += header + '\n'
+  content += header + '\n\n'
+
+  """ Initialize Tensorflow """
+  content += 'worker = ['
+  for idx, e in enumerate(setting):
+    if(idx != 0):
+      content += ','
+    content += '\'' + e['host'] + ':' + str(e['port']) + '\''
+  content += ']\n'
+
+  content += 'cluster = tf.train.ClusterSpec({"worker":worker})\n\n'
 
   """ Concat node """
   for idx, e in enumerate(opt_setting):
     node_id = e['node_id']
-    task_id = e['task_id']
+    host_id = e['host_id']
     benchmark_id = e['benchmark_id']
 
+    """ example string: """
     """ with tf.device('/job:worker/task:1/gpu:0'):') """
-    content += 'with tf.device(\'/job:worker/task:' + str(task_id)
+    content += 'with tf.device(\'/job:worker/task:' + str(host_id)
     content += benchmark[benchmark_id]['device-name']+ '\')\n'
     content += node['node'][node_id]['content']
+  content += '\n\n'
 
   """ Concat execute """
   content += execute
