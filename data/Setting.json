@@ -1,6 +1,7 @@
 {
     "clusters": [
-        {"host": "master", "port": 22222}
+        {"host": "master", "port": 22222},
+        {"host": "slave1", "port": 22222}
     ],
     "net-test-info": {
         "host": "master",

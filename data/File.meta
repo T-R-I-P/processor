@@ -34,7 +34,7 @@ init = tf.initialize_all_variables()
 print(">>> TensorFlow Session Run:")
 sess.run(init)
 
-for i in range(int(rangeCount)):
+for i in range(100):
   # Fetch data from HBase (code deleted)
   x_ = [x0,x1,x2,x3,x4,x5,x6,x7]
   x_ = np.reshape(x_, (-1, 8))

@@ -2,10 +2,27 @@ import tensorflow as tf
 import numpy as np
 
 
-worker = ['master:22222']
+worker = ['master:22222','slave1:22222']
 cluster = tf.train.ClusterSpec({"worker":worker})
 
-with tf.device('/job:worker/task:0/cpu:0')
+with tf.device('/job:worker/task:0/gpu:0')
+  result = sess.run(train_step, feed_dict={x: x_, y_4_:tmpY}) # input feed here
+  y4 = tf.Variable(tf.random_uniform([500,600]))
+  y_4 = tf.nn.relu(tf.matmul(y_3, y4))
+with tf.device('/job:worker/task:0/gpu:0')
+  y3 = tf.Variable(tf.random_uniform([400,500]))
+  y_3 = tf.nn.tanh(tf.matmul(y_2, y3))
+with tf.device('/job:worker/task:1/gpu:0')
+  y2 = tf.Variable(tf.random_uniform([200, 400]))
+  y_2 = tf.nn.relu(tf.matmul(y_,y2))
+with tf.device('/job:worker/task:0/gpu:0')
+  y = tf.Variable(tf.random_uniform([8,200]))
+  y_ = tf.nn.relu(tf.matmul(x,y))
+with tf.device('/job:worker/task:1/gpu:0')
+  y_4_ = tf.placeholder(tf.float32, [None,600])
+  cross_entropy = -tf.reduce_sum(y_4_*tf.log(y_4))
+  train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
+with tf.device('/job:worker/task:0/gpu:0')
   x = tf.placeholder(tf.float32,[None, 8])
 
 
@@ -15,7 +32,7 @@ init = tf.initialize_all_variables()
 print(">>> TensorFlow Session Run:")
 sess.run(init)
 
-for i in range(int(rangeCount)):
+for i in range(100):
   # Fetch data from HBase (code deleted)
   x_ = [x0,x1,x2,x3,x4,x5,x6,x7]
   x_ = np.reshape(x_, (-1, 8))

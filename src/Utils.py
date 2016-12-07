@@ -5,6 +5,7 @@ Utils...
 """
 
 # System Imports
+import re
 import json
 import socket
 
@@ -25,11 +26,25 @@ def getSetting(filename, aim=None):
 def getBenchmarkResult(setting_file, benchmark_file):
     setting = getSetting(setting_file, 'clusters')
 
-    benchmark = json.loads(loadFile(benchmark_file))
+    all = json.loads(loadFile(benchmark_file))
+    benchmark = {}
+    benchmark['all'] = all
+    benchmark['group_by_host'] = []
     for idx, e in enumerate(setting):
-      for idx1, e1 in enumerate(benchmark):
+      insert = {}
+      insert['cpu'] = []
+      insert['gpu'] = []
+      for idx1, e1 in enumerate(benchmark['all']):
         if(e['host'] == e1['host-name']):
-          benchmark[idx1]['host_id'] = idx
+          benchmark['all'][idx1]['host_id'] = idx
+          benchmark['all'][idx1]['benchmark_id'] = idx1
+          if(re.search('cpu', e1['device-name'])):
+            insert['cpu'].append(benchmark['all'][idx1])
+          elif(re.search('gpu', e1['device-name'])):
+            insert['gpu'].append(benchmark['all'][idx1])
+
+      benchmark['group_by_host'].append(insert)
+
 
     return benchmark
 

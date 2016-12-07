@@ -33,7 +33,7 @@ def genOptimization(raw, opt_setting, setting_file, benchmark_file, output_file)
     """ example string: """
     """ with tf.device('/job:worker/task:1/gpu:0'):') """
     content += 'with tf.device(\'/job:worker/task:' + str(host_id)
-    content += benchmark[benchmark_id]['device-name']+ '\')\n'
+    content += benchmark['all'][benchmark_id]['device-name']+ '\')\n'
     content += node['node'][node_id]['content']
   content += '\n\n'
 
