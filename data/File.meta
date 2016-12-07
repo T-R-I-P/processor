@@ -17,7 +17,6 @@ __node__(3){    #with tf.device('/job:worker/task:1/gpu:0'):
   y_3 = tf.nn.tanh(tf.matmul(y_2, y3))
 }
 __node__(4){    #with tf.device('/job:worker/task:2/gpu:0'):
-  result = sess.run(train_step, feed_dict={x: x_, y_4_:tmpY}) # input feed here
   y4 = tf.Variable(tf.random_uniform([500,600]))
   y_4 = tf.nn.relu(tf.matmul(y_3, y4))
 }
@@ -34,7 +33,7 @@ init = tf.initialize_all_variables()
 print(">>> TensorFlow Session Run:")
 sess.run(init)
 
-for i in range(100):
+for i in range(1):
   # Fetch data from HBase (code deleted)
   x_ = [x0,x1,x2,x3,x4,x5,x6,x7]
   x_ = np.reshape(x_, (-1, 8))

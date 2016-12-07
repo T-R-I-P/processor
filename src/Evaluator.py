@@ -208,6 +208,7 @@ def pairAlgorithm(data, benchmark):
         })
         idx_device += 1
 
+  opt_setting = sorted(opt_setting, key=itemgetter('node_id'), reverse=False)
   pprint.pprint(opt_setting)
   return opt_setting
 
