@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-
+# -*- coding: utf-8 -*-
 import tensorflow as tf
 import happybase as hb
 import random as rd
@@ -8,48 +7,55 @@ import hbForApp as hbfa
 import sys
 import time
 
-
-with tf.device('/job:worker/task:0/gpu:0'):
+#graph define
+__node__(0){
 	with tf.name_scope('input_m_0'):
 		x = tf.placeholder(tf.float32,[None, 7], name='input_x')
-with tf.device('/job:worker/task:2/gpu:0'):
+}
+__node__(1){
 	with tf.name_scope('hidden_1_m_1'):
 		y1 = tf.Variable(tf.random_uniform([7,200]), name='hidden_layer_y1')
 		y_1 = tf.nn.relu(tf.matmul(x,y1))
 #tf.histogram_summary('h1m1', y_1)
-with tf.device('/job:worker/task:0/gpu:0'):
+}
+__node__(2){
 	with tf.name_scope('hidden_2_m_2'):
 		y2 = tf.Variable(tf.random_uniform([200, 400]), name='hidden_layer_y2')
 		y_2 = tf.nn.relu(tf.matmul(y_1,y2))
 #tf.histogram_summary('h2m2', y_2)
-with tf.device('/job:worker/task:0/gpu:0'):
+}
+__node__(3){
 	with tf.name_scope('hidden_3_m_1'):
 		y3 = tf.Variable(tf.random_uniform([400,500]), name='hidden_layer_y3')
 		y_3 = tf.nn.tanh(tf.matmul(y_2, y3))
 #tf.histogram_summary('h3m1', y_3)
-with tf.device('/job:worker/task:1/gpu:0'):
+}
+__node__(4){
 	with tf.name_scope('hidden_4_m_2'):
-		y4 = tf.Variable(tf.random_uniform([500,378]), name='hidden_layer_y4')
+		y4 = tf.Variable(tf.random_uniform([500,379]), name='hidden_layer_y4')
 		y_4 = tf.nn.relu(tf.matmul(y_3, y4))
 #tf.histogram_summary('h4m2', y_4)
-with tf.device('/job:worker/task:0/gpu:0'):
+}
+__node__(5){
 	with tf.name_scope('output_m_0'):
-		y = tf.placeholder(tf.float32, [None,378], name='output_y')
-with tf.device('/job:worker/task:0/gpu:0'):
+		y = tf.placeholder(tf.float32, [None,379], name='output_y')
+}
+__node__(6){
 	cross_entropy = -tf.reduce_sum(y*tf.log(y_4))
 	train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
-	print ">>> Graph construction done."
+}
 
-
-worker = ["master:2222","slave1:2222","slave2:2222"]
-cluster = tf.train.ClusterSpec({"worker":worker})
-
+__execute__(){
 #happyBase specification
 fa = hbfa.hbAccess()
 fa.connOpen()
 batchSize = 100
+
 #cluster specification without parameterServer
 print(">>> Setting TensorFlow cluster specification...")
+#parameterServer = ["master:2223"]
+worker = ["master:2222", "slave1:2222", "slave2:2222"]
+cluster = tf.train.ClusterSpec({"worker":worker})
 
 #other setting
 if len(sys.argv) is 1:
@@ -76,7 +82,7 @@ print(">>> TensorFlow Session initiation:")
 sess.run(init)
 print ">>> Initialtion done."
 
-# Start to run iteration times wtih batchSize datas each iteration
+# Start to run iteration times wtih batchSize datas each iteration 
 print ">>> Session run..."
 for i in range(int(iteration)):
 	#writer = tf.train.SummaryWriter("/home/mcas/tensorflow/tb_output", sess.graph)
@@ -96,7 +102,7 @@ for i in range(int(iteration)):
 		result = sess.run(train_step, feed_dict={x: trainData, y: trainLabel})
 	print(">>>>> Progress: "+ "{0:.2f}".format((i+1)/float(iteration)*100) +"%")
 testDataFinal, testLabelFinal = fa.fetchData_no_buyYear(1,1)
-print "*********\n>>>>> [Final] Accuracy:", (sess.run(accuracy, feed_dict={x: testDataFinal, y: testLabelFinal})), "\n*********"
+print "*********\n>>>>> [Final] Accuracy:", (sess.run(accuracy, feed_dict={x: testDataFinal, y: testLabelFinal})), "\n*********"		
 sess.close()
 fa.connClose()
 
@@ -107,3 +113,4 @@ tEnd = time.time()
 print "It cost %f sec" % (tEnd - tStart)
 
 costTime = tEnd - tStart
+}

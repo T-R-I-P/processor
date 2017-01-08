@@ -11,18 +11,9 @@ def genOptimization(raw, opt_setting, setting_file, benchmark_file, output_file)
   benchmark = Utils.getBenchmarkResult(setting_file, benchmark_file)
   content = ''
 
+  content += '#!/usr/bin/env python\n\n'
   """ Concat header """
   content += header + '\n\n'
-
-  """ Initialize Tensorflow """
-  content += 'worker = ['
-  for idx, e in enumerate(setting):
-    if(idx != 0):
-      content += ','
-    content += '\'' + e['host'] + ':' + str(e['port']) + '\''
-  content += ']\n'
-
-  content += 'cluster = tf.train.ClusterSpec({"worker":worker})\n\n'
 
   """ Concat node """
   for idx, e in enumerate(opt_setting):
@@ -36,6 +27,17 @@ def genOptimization(raw, opt_setting, setting_file, benchmark_file, output_file)
     content += benchmark['all'][benchmark_id]['device-name']+ '\'):\n'
     content += node['node'][node_id]['content']
   content += '\n\n'
+
+
+  """ Initialize Tensorflow """
+  content += 'worker = ['
+  for idx, e in enumerate(setting):
+    if(idx != 0):
+      content += ','
+    content += '"' + e['host'] + ':' + str(e['port']) + '"'
+  content += ']\n'
+
+  content += 'cluster = tf.train.ClusterSpec({"worker":worker})\n\n'
 
   """ Concat execute """
   content += execute

@@ -158,7 +158,7 @@ def analyzeNode(node):
         new_variable['value'] = tmp.split(',')
       elif(re.search('placeholder', str)):
         new_variable['type'] = 'placeholder'
-        tmp = re.search(r'placeholder\(.*?\[(.*?)\]\)', right_value).group(1)
+        tmp = re.search(r'placeholder\(.*?\[(.*?)\].*?\)', right_value).group(1)
         new_variable['value'] = tmp.split(',')
       else:
         continue

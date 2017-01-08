@@ -9,47 +9,34 @@ import sys
 import time
 
 
-with tf.device('/job:worker/task:0/gpu:0'):
+with tf.device('/cpu:0'):
 	with tf.name_scope('input_m_0'):
 		x = tf.placeholder(tf.float32,[None, 7], name='input_x')
-with tf.device('/job:worker/task:2/gpu:0'):
 	with tf.name_scope('hidden_1_m_1'):
 		y1 = tf.Variable(tf.random_uniform([7,200]), name='hidden_layer_y1')
 		y_1 = tf.nn.relu(tf.matmul(x,y1))
-#tf.histogram_summary('h1m1', y_1)
-with tf.device('/job:worker/task:0/gpu:0'):
 	with tf.name_scope('hidden_2_m_2'):
 		y2 = tf.Variable(tf.random_uniform([200, 400]), name='hidden_layer_y2')
 		y_2 = tf.nn.relu(tf.matmul(y_1,y2))
-#tf.histogram_summary('h2m2', y_2)
-with tf.device('/job:worker/task:0/gpu:0'):
 	with tf.name_scope('hidden_3_m_1'):
 		y3 = tf.Variable(tf.random_uniform([400,500]), name='hidden_layer_y3')
 		y_3 = tf.nn.tanh(tf.matmul(y_2, y3))
-#tf.histogram_summary('h3m1', y_3)
-with tf.device('/job:worker/task:1/gpu:0'):
 	with tf.name_scope('hidden_4_m_2'):
-		y4 = tf.Variable(tf.random_uniform([500,378]), name='hidden_layer_y4')
+		y4 = tf.Variable(tf.random_uniform([500,379]), name='hidden_layer_y4')
 		y_4 = tf.nn.relu(tf.matmul(y_3, y4))
-#tf.histogram_summary('h4m2', y_4)
-with tf.device('/job:worker/task:0/gpu:0'):
 	with tf.name_scope('output_m_0'):
-		y = tf.placeholder(tf.float32, [None,378], name='output_y')
-with tf.device('/job:worker/task:0/gpu:0'):
+		y = tf.placeholder(tf.float32, [None,379], name='output_y')
 	cross_entropy = -tf.reduce_sum(y*tf.log(y_4))
 	train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
-	print ">>> Graph construction done."
 
 
-worker = ["master:2222","slave1:2222","slave2:2222"]
-cluster = tf.train.ClusterSpec({"worker":worker})
+#worker = ["master:2222","slave1:2222","slave2:2222"]
+#cluster = tf.train.ClusterSpec({"worker":worker})
 
 #happyBase specification
 fa = hbfa.hbAccess()
 fa.connOpen()
 batchSize = 100
-#cluster specification without parameterServer
-print(">>> Setting TensorFlow cluster specification...")
 
 #other setting
 if len(sys.argv) is 1:
@@ -64,7 +51,8 @@ elif len(sys.argv) is 3:
 
 #setting session
 print ">>> Start session configuration..."
-sess = tf.Session("grpc://localhost:2222", config=tf.ConfigProto(log_device_placement=True))
+sess = tf.Session()
+#sess = tf.Session("grpc://localhost:2222", config=tf.ConfigProto(log_device_placement=True))
 init = tf.initialize_all_variables()
 
 '''
